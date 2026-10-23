@@ -7,6 +7,7 @@ publish = "frontend/dist"
 [build.environment]
 NODE_VERSION = "22"
 PNPM_VERSION = "10"
+VITE_API_BASE = "https://production-order-manage.promisezhangbo.deno.net"
 
 # Vue 用的是前端路由，刷新子页面时把请求交回 index.html。
 [[redirects]]

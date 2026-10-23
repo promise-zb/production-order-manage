@@ -1,0 +1,21 @@
+{
+  "name": "production-order-manage",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm -r --parallel --stream run dev",
+    "build": "pnpm --filter production-order-frontend build",
+    "preview": "pnpm --filter production-order-frontend preview",
+    "gen:api": "openapi-gen",
+    "lint": "oxlint",
+    "lint:fix": "oxlint --fix",
+    "fmt": "oxfmt",
+    "fmt:check": "oxfmt --check"
+  },
+  "devDependencies": {
+    "openapi-axios-sdk": "^0.2.2",
+    "oxfmt": "^0.74.0",
+    "oxlint": "^1.89.0",
+    "typescript": "5.9.3"
+  },
+  "packageManager": "pnpm@10.13.1"
+}

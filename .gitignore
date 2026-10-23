@@ -1,0 +1,10 @@
+.DS_Store
+node_modules/
+pnpm-debug.log*
+backend/data/
+backend/.env
+frontend/dist/
+frontend/src/api/generated/.cache
+frontend/src/api/generated/.cache.json
+frontend/.env
+frontend/.env.local

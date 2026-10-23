@@ -1,0 +1,481 @@
+# 生产跟单接口说明。改接口时先改这份文件，再在前端执行 pnpm gen:api。
+# 本机也可直接打开 http://127.0.0.1:8080/api/openapi.yaml。
+openapi: 3.0.3
+info:
+  title: 生产跟单接口
+  version: 1.0.0
+  description: 登录后管理订单。金额和剩余数量由服务端重算。
+servers:
+  - url: http://127.0.0.1:8080
+    description: 本机
+security:
+  - bearerAuth: []
+paths:
+  /api/health:
+    get:
+      operationId: health
+      summary: 健康检查
+      security: []
+      responses:
+        '200':
+          description: 服务正常
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Health'
+  /api/openapi.yaml:
+    get:
+      operationId: openapiYaml
+      summary: 下载这份接口说明
+      security: []
+      responses:
+        '200':
+          description: OpenAPI 文档
+          content:
+            application/yaml:
+              schema:
+                type: string
+  /api/login:
+    post:
+      operationId: login
+      summary: 登录
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: 登录成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResult'
+        '401':
+          $ref: '#/components/responses/Error'
+  /api/orders:
+    get:
+      operationId: listOrders
+      summary: 分页查询订单
+      parameters:
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/pageSize'
+        - $ref: '#/components/parameters/keyword'
+        - $ref: '#/components/parameters/status'
+      responses:
+        '200':
+          description: 订单列表
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderPage'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+    post:
+      operationId: createOrder
+      summary: 新增订单
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderInput'
+      responses:
+        '200':
+          description: 新增后的订单
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+  /api/orders/export:
+    get:
+      operationId: exportOrders
+      summary: 导出订单 Excel
+      parameters:
+        - name: ids
+          in: query
+          description: 选中的订单 ID，逗号分隔。有值时忽略 keyword 和 status。
+          schema:
+            type: string
+        - $ref: '#/components/parameters/keyword'
+        - $ref: '#/components/parameters/status'
+      responses:
+        '200':
+          description: xlsx 文件
+          content:
+            application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
+              schema:
+                type: string
+                format: binary
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+  /api/orders/template:
+    get:
+      operationId: downloadOrderTemplate
+      summary: 下载导入模板
+      responses:
+        '200':
+          description: xlsx 模板
+          content:
+            application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
+              schema:
+                type: string
+                format: binary
+        '401':
+          $ref: '#/components/responses/Error'
+  /api/orders/import:
+    post:
+      operationId: importOrders
+      summary: 导入订单 Excel
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: 字段名必须是 file，且为 .xlsx
+      responses:
+        '200':
+          description: 导入结果。部分行失败时 errors 里有原因，已成功的行仍然写入。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImportResult'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+  /api/orders/batch-delete:
+    post:
+      operationId: batchDeleteOrders
+      summary: 批量删除订单
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BatchDeleteRequest'
+      responses:
+        '200':
+          description: 实际删除条数
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchDeleteResult'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+  /api/orders/{id}:
+    parameters:
+      - $ref: '#/components/parameters/id'
+    get:
+      operationId: getOrder
+      summary: 订单详情
+      responses:
+        '200':
+          description: 订单
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+    put:
+      operationId: updateOrder
+      summary: 修改订单
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderInput'
+      responses:
+        '200':
+          description: 修改后的订单
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+    delete:
+      operationId: deleteOrder
+      summary: 删除订单
+      responses:
+        '200':
+          description: 已删除
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: 登录接口返回的 token
+  parameters:
+    id:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+        minimum: 1
+    page:
+      name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+    pageSize:
+      name: pageSize
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 10
+    keyword:
+      name: keyword
+      in: query
+      schema:
+        type: string
+    status:
+      name: status
+      in: query
+      schema:
+        $ref: '#/components/schemas/OrderStatus'
+  responses:
+    Error:
+      description: 请求失败
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Message'
+  schemas:
+    Message:
+      type: object
+      required: [message]
+      properties:
+        message:
+          type: string
+    Health:
+      type: object
+      required: [ok, driver]
+      properties:
+        ok:
+          type: boolean
+        driver:
+          type: string
+          description: sqlite 或 postgres
+    LoginRequest:
+      type: object
+      required: [username, password]
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+    LoginResult:
+      type: object
+      required: [token, username]
+      properties:
+        token:
+          type: string
+        username:
+          type: string
+    OrderStatus:
+      type: string
+      enum: [pending, processing, partial_shipped, done, cancelled]
+      description: 待生产、生产中、部分出货、已完成、已取消。也可以传中文，服务端会转成这些值。
+    Order:
+      type: object
+      required:
+        - id
+        - orderNo
+        - name
+        - alias
+        - customerName
+        - customerAddress
+        - contactName
+        - contactPhone
+        - productName
+        - styleNo
+        - status
+        - orderQty
+        - unitPrice
+        - totalAmount
+        - todayShipQty
+        - shippedQty
+        - remainQty
+        - materialDoneAt
+        - orderTotalHours
+        - orderDate
+        - deliveryDate
+        - remark
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: integer
+        orderNo:
+          type: string
+        name:
+          type: string
+        alias:
+          type: string
+        customerName:
+          type: string
+        customerAddress:
+          type: string
+        contactName:
+          type: string
+        contactPhone:
+          type: string
+        productName:
+          type: string
+        styleNo:
+          type: string
+        status:
+          $ref: '#/components/schemas/OrderStatus'
+        orderQty:
+          type: integer
+        unitPrice:
+          type: number
+        totalAmount:
+          type: number
+          description: 单个金额 × 订单总数
+        todayShipQty:
+          type: integer
+        shippedQty:
+          type: integer
+        remainQty:
+          type: integer
+          description: 订单总数 − 累计已出货
+        materialDoneAt:
+          type: string
+        orderTotalHours:
+          type: number
+        orderDate:
+          type: string
+        deliveryDate:
+          type: string
+        remark:
+          type: string
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+    OrderInput:
+      type: object
+      required: [name]
+      description: 总金额和剩余数量不用传，服务端会重算。名称必填。
+      properties:
+        orderNo:
+          type: string
+        name:
+          type: string
+        alias:
+          type: string
+        customerName:
+          type: string
+        customerAddress:
+          type: string
+        contactName:
+          type: string
+        contactPhone:
+          type: string
+        productName:
+          type: string
+        styleNo:
+          type: string
+        status:
+          $ref: '#/components/schemas/OrderStatus'
+        orderQty:
+          type: number
+        unitPrice:
+          type: number
+        todayShipQty:
+          type: number
+        shippedQty:
+          type: number
+        orderTotalHours:
+          type: number
+        materialDoneAt:
+          type: string
+        orderDate:
+          type: string
+        deliveryDate:
+          type: string
+        remark:
+          type: string
+    OrderPage:
+      type: object
+      required: [list, total, page, pageSize]
+      properties:
+        list:
+          type: array
+          items:
+            $ref: '#/components/schemas/Order'
+        total:
+          type: integer
+        page:
+          type: integer
+        pageSize:
+          type: integer
+    ImportResult:
+      type: object
+      required: [inserted, errors]
+      properties:
+        inserted:
+          type: integer
+        errors:
+          type: array
+          items:
+            type: string
+    BatchDeleteRequest:
+      type: object
+      required: [ids]
+      properties:
+        ids:
+          type: array
+          items:
+            type: integer
+    BatchDeleteResult:
+      type: object
+      required: [deleted]
+      properties:
+        deleted:
+          type: integer

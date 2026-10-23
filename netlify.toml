@@ -1,0 +1,15 @@
+# 在 Netlify 上把 Base directory 留空，使用仓库根目录。
+# 依赖由根目录的 pnpm-lock.yaml 安装，页面构建结果在 frontend/dist。
+[build]
+command = "pnpm --filter production-order-frontend build"
+publish = "frontend/dist"
+
+[build.environment]
+NODE_VERSION = "22"
+PNPM_VERSION = "10"
+
+# Vue 用的是前端路由，刷新子页面时把请求交回 index.html。
+[[redirects]]
+from = "/*"
+to = "/index.html"
+status = 200

@@ -1,0 +1,29 @@
+{
+  "name": "production-order-frontend",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "gen:api": "pnpm -w gen:api",
+    "predev": "pnpm -w gen:api",
+    "prebuild": "pnpm -w gen:api",
+    "pretypecheck": "pnpm -w gen:api",
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "typecheck": "tsc --noEmit",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "axios": "^1.20.0",
+    "element-plus": "^2.14.7",
+    "vue": "^3.5.13",
+    "vue-router": "^4.5.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.2.1",
+    "less": "^4.9.1",
+    "openapi-axios-sdk": "^0.2.2",
+    "typescript": "7.0.2",
+    "vite": "^6.0.7"
+  }
+}

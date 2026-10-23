@@ -1,0 +1,23 @@
+{
+  "name": "production-order-backend",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch --watch-path=server.ts --watch-path=db.ts --watch-path=auth.ts --watch-path=orders.ts --watch-path=excel.ts --watch-path=types.ts --disable-warning=ExperimentalWarning server.ts",
+    "start": "node --disable-warning=ExperimentalWarning server.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "exceljs": "^4.4.0",
+    "express": "^4.21.2",
+    "multer": "^2.0.2",
+    "pg": "^8.16.3"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/multer": "^2.3.0",
+    "@types/node": "^22.20.5",
+    "@types/pg": "^8.23.1",
+    "typescript": "7.0.2"
+  }
+}

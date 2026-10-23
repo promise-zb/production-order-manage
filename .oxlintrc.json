@@ -1,0 +1,33 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["eslint", "typescript", "unicorn", "oxc", "vue", "node", "import"],
+  "categories": {
+    "correctness": "error"
+  },
+  "env": {
+    "builtin": true
+  },
+  "ignorePatterns": [
+    "**/node_modules/**",
+    "**/dist/**",
+    "backend/data/**",
+    "pnpm-lock.yaml",
+    "frontend/src/api/generated/**"
+  ],
+  "overrides": [
+    {
+      "files": ["backend/**/*.{js,ts,mjs,cjs}"],
+      "env": {
+        "builtin": true,
+        "node": true
+      }
+    },
+    {
+      "files": ["frontend/**/*.{js,ts,vue}"],
+      "env": {
+        "builtin": true,
+        "browser": true
+      }
+    }
+  ]
+}

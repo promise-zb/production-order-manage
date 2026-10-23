@@ -44,6 +44,7 @@
           </el-dropdown-menu>
         </template>
       </el-dropdown>
+      <el-button :loading="loading" @click="emit('refresh')">刷新</el-button>
     </div>
   </div>
 </template>
@@ -59,6 +60,7 @@ const status = defineModel<OrderStatus>()
 defineProps<{
   importing: boolean
   selectedCount: number
+  loading: boolean
 }>()
 
 const emit = defineEmits<{
@@ -70,6 +72,7 @@ const emit = defineEmits<{
   import: [options: UploadRequestOptions]
   exportSelected: []
   batchDelete: []
+  refresh: []
 }>()
 
 function onImport(options: UploadRequestOptions) {

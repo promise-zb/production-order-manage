@@ -4,6 +4,7 @@
       v-model:keyword="keyword"
       v-model:status="status"
       :importing="importing"
+      :loading="loading"
       :selected-count="selectedRowKeys.length"
       @search="onSearch"
       @reset="onReset"
@@ -13,6 +14,7 @@
       @export-filtered="exportFiltered"
       @export-selected="exportSelected"
       @batch-delete="onBatchDelete"
+      @refresh="load"
     />
     <OrderTable
       v-model:table-tab="tableTab"
